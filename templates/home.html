@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+{% block title %}Home | Aacha Khao, Khush Raho{% endblock %}
+
+{% block content %}
+<style>
+    body { background-color: #f8f9fa; color: #2d3436; }
+
+    /* 1. Hero Banner */
+    .hero-banner {
+        background: linear-gradient(135deg, rgba(40, 167, 69, 0.8), rgba(10, 100, 40, 0.9)), 
+                    url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1500&q=80');
+        background-size: cover; background-position: center;
+        color: white; padding: 80px 20px; border-radius: 30px; margin-top: 20px; text-align: center;
+        box-shadow: 0 15px 35px rgba(40, 167, 69, 0.2);
+    }
+
+    /* 2. Floating Search Bar */
+    .search-container { max-width: 550px; margin: -35px auto 40px; position: relative; z-index: 10; }
+    .search-input { 
+        border-radius: 100px; padding: 18px 30px; border: none; 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08); font-size: 1rem;
+    }
+    .search-btn { 
+        position: absolute; right: 8px; top: 50%; transform: translateY(-50%); 
+        border-radius: 100px; padding: 10px 25px; background: #28a745; 
+        border: none; color: white; transition: 0.3s;
+    }
+
+    /* 3. Modern Food Cards */
+    .food-card {
+        border: none; border-radius: 24px; overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        background: #fff; height: 100%; position: relative;
+    }
+    .food-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+    
+    .food-img-wrapper { width: 100%; height: 200px; overflow: hidden; position: relative; }
+    .food-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: 0.6s ease; }
+    .food-card:hover .food-img-wrapper img { transform: scale(1.15); }
+
+    .img-badge {
+        position: absolute; top: 12px; left: 12px; background: rgba(255,255,255,0.9);
+        padding: 4px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: 700;
+        color: #28a745; backdrop-filter: blur(5px);
+    }
+
+    .btn-add-to-cart {
+        background: #f1f3f5; border: none; color: #28a745; font-weight: 700;
+        padding: 8px 18px; border-radius: 12px; transition: 0.3s;
+    }
+    .btn-add-to-cart:hover { background: #28a745; color: white; }
+
+    /* Circular Categories */
+    .cat-item { text-align: center; min-width: 100px; text-decoration: none; color: #2d3436; transition: 0.3s; }
+    .cat-img-wrapper { 
+        width: 75px; height: 75px; border-radius: 22px; 
+        overflow: hidden; margin: 0 auto 10px; background: white;
+        box-shadow: 0 8px 15px rgba(0,0,0,0.05); border: 2px solid transparent; 
+    }
+    .cat-item:hover .cat-img-wrapper { transform: scale(1.05); border-color: #28a745; }
+</style>
+
+<div class="container">
+    <div class="hero-banner">
+        <h1 class="display-5 fw-bold">Aacha Khao, Khush Raho</h1>
+        <p class="opacity-75">Ghar jaisa swad, har bite mein mohabbat.</p>
+    </div>
+
+    <div class="search-container">
+        <form action="{% url 'home' %}" method="GET" class="position-relative">
+            <input type="text" name="search" class="form-control search-input" placeholder="Tikka, Biryani, Mithai..." value="{{ request.GET.search }}">
+            <button type="submit" class="search-btn fw-bold">Search</button>
+        </form>
+    </div>
+
+    <div class="mt-5">
+        <h4 class="fw-bold mb-3">In the Mood for?</h4>
+        <div class="cat-container d-flex overflow-auto pb-3" style="scrollbar-width: none;">
+            <a href="{% url 'home' %}" class="cat-item me-3">
+                <div class="cat-img-wrapper d-flex align-items-center justify-content-center">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2737/2737109.png" style="width: 40px;">
+                </div>
+                <p class="fw-bold">All</p>
+            </a>
+            {% for cat in categories %}
+            <a href="?category={{ cat.id }}" class="cat-item me-3">
+                <div class="cat-img-wrapper">
+                    {% if cat.image %}
+                        <img src="{{ cat.image.url }}" class="w-100 h-100 object-fit-cover">
+                    {% else %}
+                        <img src="https://via.placeholder.com/150" class="w-100 h-100 object-fit-cover">
+                    {% endif %}
+                </div>
+                <p class="fw-bold">{{ cat.name }}</p>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% if request.GET.search %}
+        <p class="mt-4 text-muted">Showing results for <b>"{{ request.GET.search }}"</b> — <a href="{% url 'home' %}" class="text-success small">Clear</a></p>
+    {% endif %}
+
+    <h4 class="fw-bold mt-4 mb-4">Popular Dishes</h4>
+    <div class="row g-4 mb-5">
+        {% for food in foods %}
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="card food-card shadow-sm">
+                <div class="food-img-wrapper">
+                    <span class="img-badge">{{ food.category.name }}</span>
+                    <a href="{% url 'food_detail' food.id %}">
+                        {% if food.image %}
+                            <img src="{{ food.image.url }}" alt="{{ food.name }}">
+                        {% endif %}
+                    </a>
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'food_detail' food.id %}" class="text-decoration-none">
+                        <h6 class="food-name text-truncate">{{ food.name }}</h6>
+                        <span class="food-cat">Fresh & Healthy</span>
+                    </a>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="price-tag"><span>$</span>{{ food.price }}</span>
+                        <button class="btn-add-to-cart btn-add-to-cart-ajax" 
+                                data-url="{% url 'add_to_cart' food.id %}">
+                            ADD
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <img src="https://cdn-icons-png.flaticon.com/512/5058/5058432.png" width="80" class="mb-3 opacity-50">
+            <h3 class="text-muted">No dishes found!</h3>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    // AJAX Add to Cart Logic
+    $('.btn-add-to-cart-ajax').on('click', function(e) {
+        e.preventDefault();
+        var $btn = $(this);
+        var url = $btn.data('url'); // Using .data() is safer
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(response) {
+                if (response.status === 'success') {
+                    // Visual feedback
+                    $btn.html('Added ✓').css({'background': '#28a745', 'color': '#fff'});
+                    
+                    // Update Navbar Count
+                    $('#cart-count').text(response.cart_count);
+                    
+                    // Reset button after 1.5s
+                    setTimeout(function() {
+                        $btn.html('ADD').css({'background': '#f1f3f5', 'color': '#28a745'});
+                    }, 1500);
+                }
+            },
+            error: function() {
+                alert("Login zaroori hai ya server error!");
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

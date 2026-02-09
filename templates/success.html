@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5 text-center">
+    <div class="card border-0 shadow-lg p-5 rounded-4 mx-auto" style="max-width: 600px; background: #fff;">
+        <div class="mb-4">
+            <i class="fas fa-check-circle text-success" style="font-size: 5rem;"></i>
+        </div>
+        <h1 class="fw-bold text-dark">Order Received!</h1>
+        <p class="text-muted fs-5">Thank you, <strong>{{ order.customer_name }}</strong>. Your delicious meal is being prepared with love.</p>
+        
+        <div class="bg-light p-4 rounded-4 my-4 text-start border">
+            <h6 class="fw-bold border-bottom pb-2 mb-3"><i class="fas fa-receipt me-2"></i>Order Summary:</h6>
+            <div class="d-flex justify-content-between mt-2 mb-2">
+                <span class="text-muted">Order ID:</span>
+                <span class="fw-bold text-dark">#MK-{{ order.id }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Total Amount:</span>
+                <span class="fw-bold text-success fs-5">${{ order.total_price }}</span>
+            </div>
+            <div class="d-flex justify-content-between">
+                <span class="text-muted">Delivery To:</span>
+                <span class="text-end fw-semibold" style="max-width: 250px;">{{ order.address }}</span>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2 mt-4">
+            <a href="{% url 'home' %}" class="btn btn-success rounded-pill py-3 fw-bold shadow-sm">
+                <i class="fas fa-utensils me-2"></i>Order More Food
+            </a>
+            <a href="{% url 'customer_dashboard' %}" class="btn btn-outline-dark rounded-pill py-2 fw-bold mt-2">
+                Track My Order
+            </a>
+        </div>
+        
+        <p class="mt-4 small text-muted">
+            <i class="fas fa-phone-alt me-1"></i> A confirmation call will be made to <strong>{{ order.phone }}</strong>
+        </p>
+    </div>
+</div>
+{% endblock %}

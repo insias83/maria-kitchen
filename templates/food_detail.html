@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ food.name }} | Maria's Kitchen{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-success text-decoration-none">Menu</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ food.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                <div class="row g-0 align-items-center">
+                    
+                    <div class="col-md-6">
+                        {% if food.image %}
+                        <img src="{{ food.image.url }}" 
+                             class="img-fluid w-100"
+                             style="height: 450px; object-fit: cover;" 
+                             alt="{{ food.name }}">
+                        {% else %}
+                        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 450px;">
+                            <i class="fas fa-utensils fa-5x text-muted"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card-body p-4 p-lg-5">
+                            <span class="badge bg-light text-success border border-success mb-2 px-3 rounded-pill">
+                                {{ food.category.name }}
+                            </span>
+                            <h1 class="fw-bold mb-3 display-6">{{ food.name }}</h1>
+                            
+                            <p class="text-muted fs-5 mb-4 leading-relaxed">
+                                {{ food.description }}
+                            </p>
+
+                            <div class="d-flex align-items-center justify-content-between mb-4">
+                                <h3 class="text-success fw-bold mb-0">${{ food.price }}</h3>
+                                <div class="text-warning">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                    <span class="text-muted small ms-1">(4.5)</span>
+                                </div>
+                            </div>
+
+                            <form method="post" action="{% url 'add_to_cart' food.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success btn-lg w-100 rounded-pill py-3 fw-bold shadow-sm">
+                                    <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                                </button>
+                            </form>
+                            
+                            <p class="text-center mt-3 mb-0 small text-muted">
+                                <i class="fas fa-truck me-1"></i> Delivery available in 30-45 mins
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
