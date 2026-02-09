@@ -1,1 +1,1 @@
-gunicorn myfood.wsgi
+web: gunicorn myfood.wsgi
